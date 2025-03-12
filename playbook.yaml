@@ -1,0 +1,29 @@
+- name: Install Helm
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Download the get_helm.sh script
+      get_url:
+        url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        dest: /tmp/get_helm.sh
+        mode: '0755'
+
+    - name: Run the get_helm.sh script to install/update Helm
+      shell: |
+        chmod 700 /tmp/get_helm.sh
+        /tmp/get_helm.sh
+      args:
+        executable: /bin/bash
+
+- name: Install kubectl
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Download the latest stable kubectl release
+      shell: |
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      args:
+        chdir: /tmp
+
+    - name: Install/update kubectl to /usr/local/bin
+      command: install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl
